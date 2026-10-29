@@ -19,13 +19,10 @@ if [ -f AGENTS.md ]; then
   else printf '\n' >> AGENTS.md && cat "$KIT/AGENTS.md" >> AGENTS.md && echo "[append] AGENTS.md" && added+=(AGENTS.md); fi
 else copy AGENTS.md AGENTS.md; fi
 
-# 2. 문서 틀
-for f in STATUS.md SPEC.md DECISIONS.md; do copy "templates/$f" "$f"; done
+# 2. 스킬
+for s in drill quiz; do copy "skills/$s/SKILL.md" ".agents/skills/$s/SKILL.md"; done
 
-# 3. 스킬
-for s in walkthrough quiz; do copy "skills/$s/SKILL.md" ".agents/skills/$s/SKILL.md"; done
-
-# 4. uv
+# 3. uv
 export PATH="$HOME/.local/bin:$PATH"
 if command -v uv >/dev/null 2>&1; then echo "[ok] $(uv --version)"
 else
@@ -35,25 +32,21 @@ else
   else echo "[fail] uv 설치 실패 — $log 확인"; fi
 fi
 
-# 5. commit — 추가한 파일만
+# 4. commit — 추가한 파일만
 if [ ${#added[@]} -eq 0 ]; then echo "[skip] commit (추가한 파일 없음)"
 elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then echo "[warn] git 저장소가 아님 — commit 생략"
 else
   src="https://github.com/ihansam/hack"
   rev="$(git -C "$KIT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   git add -- "${added[@]}" && \
-  git commit -q -m "chore: 작업 규칙·문서 틀·스킬 추가" -m "출처: $src ($rev)" -- "${added[@]}" && \
+  git commit -q -m "chore: 작업 규칙·스킬 추가" -m "출처: $src ($rev)" -- "${added[@]}" && \
   echo "[commit] $(git log -1 --format='%h %s')" || echo "[warn] commit 실패 — git 사용자 설정을 확인하세요"
 fi
 
 cat <<'EOF'
 
 == 사람이 할 일 ==
-1. Codex를 종료하고 다시 실행한다 — AGENTS.md와 스킬은 새 세션에서 읽힌다
-2. /model 로 모델과 effort를 직접 고른다 — 기본 effort가 낮을 수 있고, 재실행하면 직전 선택이 유지된다. 허용되지 않은 모델이 목록에 섞여 있을 수 있다
-3. 권한 모드를 auto로 바꾼다 — commit을 매번 승인하지 않게
-4. statusline에 context 사용량을 켠다
-5. 첫 지시: "시작 HH:MM, 제한 N분으로 STATUS.md 시각 채워"
-6. 문제 파악은 두 세션 동시에: ① 가벼운 모델의 새 세션에서 $walkthrough ② 작업 세션에 "환경 확인하고 SPEC 초안·Epic 분해"
-7. walkthrough가 끝나면 출력(용어·질문 후보·기준 건)을 작업 세션에 넘긴다
+1. Codex를 다시 실행한다 (AGENTS.md·스킬은 새 세션에서 읽힌다)
+2. /model 로 모델·effort를 고른다 (기본 effort가 낮을 수 있다) · 권한 auto · statusline에 context 사용량
+3. $drill 입력 — 이후 할 일은 에이전트가 안내한다
 EOF
