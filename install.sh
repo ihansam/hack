@@ -54,5 +54,6 @@ cat <<'EOF'
 3. 권한 모드를 auto로 바꾼다 — commit을 매번 승인하지 않게
 4. statusline에 context 사용량을 켠다
 5. 첫 지시: "시작 HH:MM, 제한 N분으로 STATUS.md 시각 채워"
-6. 문제 파악: 가벼운 모델의 새 세션에서 $walkthrough
+6. 문제 파악은 두 세션 동시에: ① 가벼운 모델의 새 세션에서 $walkthrough ② 작업 세션에 "환경 확인하고 SPEC 초안·Epic 분해"
+7. walkthrough가 끝나면 출력(용어·질문 후보·기준 건)을 작업 세션에 넘긴다
 EOF
